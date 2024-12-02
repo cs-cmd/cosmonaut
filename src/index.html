@@ -12,16 +12,26 @@
   <body>
     <div id="header_menu">
         <button id="save_file_button">Save</button>
-        <button id="open_file_button">Open</button>
+        <button id="save_file_as_button">Save as...</button>
+        <button id="open_file_button">Open...</button>
     </div>
 
     <div class="container">
-        <aside class="side" id="navigator"></aside>
+        <aside class="side" id="navigator">
+        </aside>
+        
         <main class="main" id="main_window">
+            <section>
+                <button>File 1</button>
+                <button>File 2</button>
+            </section>
             <textarea id="editor"></textarea>
         </main>
-        <div class="side" id="extra"></div>
-        <div class="side" id="terminal"></div>
+
+        <div class="side" id="extra">
+        </div>
     </div>
+
+    <div id="terminal">TERMINAL</div>
   </body>
 </html>

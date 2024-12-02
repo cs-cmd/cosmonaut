@@ -10,9 +10,11 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "cosmonaut",
+        "title": "Cosmonaut",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "minHeight": 600,
+        "minWidth": 600
       }
     ],
     "security": {

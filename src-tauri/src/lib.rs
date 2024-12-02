@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
-use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_dialog;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -34,31 +34,32 @@ fn save_file(file_name: &str, file_contents: &str) -> bool {
 fn save_file_via_dialog(file_contents: &str) -> bool {
     // TODO: Call 'set_parent' here to bind the new dialog to the main window
 
-    let mut was_successful;
+    // let mut was_successful;
 
 
-    tauri::AppHandle::dialog()
-        .file()
-        .set_title("Choose a file to save to")
-        .save_file(|path| {
-            // 'path' is a file path, chosen by the user. It is an Option
-            // handl
-            if let Some(p) = path {
-                was_successful = p
-                    .as_path()
-                    .and_then(|file_path| { file_path.to_str() })
-                    .and_then(|filename| {
-                        save_file(filename, file_contents);
-                        true
-                    })
-                    .ok_or_else(false);
-            }
-            else {
-                was_successful = false;
-            }
-        });
+    // tauri::AppHandle::dialog()
+    //     .file()
+    //     .set_title("Choose a file to save to")
+    //     .save_file(|path| {
+    //         // 'path' is a file path, chosen by the user. It is an Option
+    //         // handl
+    //         if let Some(p) = path {
+    //             was_successful = p
+    //                 .as_path()
+    //                 .and_then(|file_path| { file_path.to_str() })
+    //                 .and_then(|filename| {
+    //                     save_file(filename, file_contents);
+    //                     true
+    //                 })
+    //                 .ok_or_else(false);
+    //         }
+    //         else {
+    //             was_successful = false;
+    //         }
+    //     });
 
-    return was_successful;
+    // return was_successful;
+    return false;
 }
 
 #[tauri::command]
@@ -80,7 +81,7 @@ fn open_file(file_name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .plugin(tauri_plugin_dialoig::init())
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![greet, save_file, open_file])
         .run(tauri::generate_context!())
