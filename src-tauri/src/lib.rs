@@ -1,7 +1,7 @@
 use std::fs::File;
 use std::io::Read;
 use std::io::Write;
-use tauri_plugin_dialog;
+use tauri_plugin_dialog::DialogExt;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -31,35 +31,36 @@ fn save_file(file_name: &str, file_contents: &str) -> bool {
 }
 
 #[tauri::command]
-fn save_file_via_dialog(file_contents: &str) -> bool {
-    // TODO: Call 'set_parent' here to bind the new dialog to the main window
+async fn open_folder(app_handle: tauri::AppHandle) -> Option<Vec<String>> {
+    let mut files: Vec<String> = Vec::new();
 
-    // let mut was_successful;
+    println!("Opening Folder dialog");
 
+    // Prompt user to select a folder
+    app_handle
+        .dialog()
+        .file()
+        .pick_folder(|f| {
+            f
+            .unwrap()
+            .as_path()
+            .unwrap()
+            .read_dir()
+            .unwrap()
+            .for_each(|dir_res| {
+                let s = dir_res
+                    .unwrap()
+                    .file_name()
+                    .into_string();
 
-    // tauri::AppHandle::dialog()
-    //     .file()
-    //     .set_title("Choose a file to save to")
-    //     .save_file(|path| {
-    //         // 'path' is a file path, chosen by the user. It is an Option
-    //         // handl
-    //         if let Some(p) = path {
-    //             was_successful = p
-    //                 .as_path()
-    //                 .and_then(|file_path| { file_path.to_str() })
-    //                 .and_then(|filename| {
-    //                     save_file(filename, file_contents);
-    //                     true
-    //                 })
-    //                 .ok_or_else(false);
-    //         }
-    //         else {
-    //             was_successful = false;
-    //         }
-    //     });
+                if let Ok(filename) = s {
+                    &files.push(filename);
+                }
 
-    // return was_successful;
-    return false;
+            });
+        });
+
+    return Some(files);
 }
 
 #[tauri::command]
@@ -83,7 +84,9 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![greet, save_file, open_file])
+        .invoke_handler(
+            tauri::generate_handler![greet, save_file, open_folder]
+        )
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
