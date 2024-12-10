@@ -31,36 +31,24 @@ fn save_file(file_name: &str, file_contents: &str) -> bool {
 }
 
 #[tauri::command]
-async fn open_folder(app_handle: tauri::AppHandle) -> Option<Vec<String>> {
-    let mut files: Vec<String> = Vec::new();
+fn open_folder(folder_name: &str) -> Option<Vec<String>> {
+    // Determine if item is a valid directory path, if not, return None
+    let files: Vec<String> = Vec::new();
 
-    println!("Opening Folder dialog");
-
-    // Prompt user to select a folder
-    app_handle
-        .dialog()
-        .file()
-        .pick_folder(|f| {
-            f
-            .unwrap()
-            .as_path()
-            .unwrap()
-            .read_dir()
-            .unwrap()
-            .for_each(|dir_res| {
-                let s = dir_res
-                    .unwrap()
-                    .file_name()
-                    .into_string();
-
-                if let Ok(filename) = s {
-                    &files.push(filename);
-                }
-
-            });
-        });
-
+    // Attempt to read folder contents and load them into the 'files' collection to return
     return Some(files);
+}
+
+async fn open_folder_via_dialog(app_handle: tauri::AppHandle) -> Option<Vec<String>> {
+    // Prompt user to select a folder
+    let folder_name = app_handle.dialog().file().blocking_pick_folder();
+
+
+    if let Option::None = folder_name {
+        return None;
+    }
+
+    return open_folder("test");
 }
 
 #[tauri::command]
@@ -73,7 +61,7 @@ fn open_file(file_name: &str) -> String {
     let mut contents = String::new();
 
     match file.read_to_string(&mut contents) {
-        Err(_) => "Cannfot read file contents".to_string(),
+        Err(_) => "Cannot read file contents".to_string(),
         Ok(_) => contents,
     }
 }
